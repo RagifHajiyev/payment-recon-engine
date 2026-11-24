@@ -1,3 +1,4 @@
+
 """Three-way reconciliation: bank ledger vs processor file vs partner statement."""
 
 from __future__ import annotations
@@ -39,19 +40,24 @@ def reconcile(
         .rename(columns={"ts": "ts_bank", "currency": "ccy_bank", "amount": "bank_amt"})
         .merge(
             proc[["ref", "ts", "currency", "amount"]].rename(
-                columns={"ts": "ts_proc", "currency": "ccy_proc", "amount": "proc_amt"}),
-            on="ref", how="outer",
+                columns={"ts": "ts_proc", "currency": "ccy_proc", "amount": "proc_amt"}
+            ),
+            on="ref",
+            how="outer",
         )
         .merge(
             partner[["ref", "partner", "currency", "amount"]].rename(
-                columns={"partner": "partner_stmt", "currency": "ccy_part", "amount": "part_amt"}),
-            on="ref", how="outer",
+                columns={"partner": "partner_stmt", "currency": "ccy_part", "amount": "part_amt"}
+            ),
+            on="ref",
+            how="outer",
         )
     )
 
     in_bank = m["bank_amt"].notna()
     in_proc = m["proc_amt"].notna()
     in_part = m["part_amt"].notna()
+
     d_proc = (m["bank_amt"] - m["proc_amt"]).abs()
     d_part = (m["bank_amt"] - m["part_amt"]).abs()
 
@@ -76,20 +82,34 @@ def reconcile(
     stake = np.select(
         [
             m["issue"].eq("not_in_bank"),
-            m["issue"].isin(["missing_in_processor", "missing_in_partner", "duplicate_in_processor"]),
+            m["issue"].isin(
+                ["missing_in_processor", "missing_in_partner", "duplicate_in_processor"]
+            ),
             m["issue"].eq("amount_mismatch"),
             m["issue"].eq("partner_amount_mismatch"),
         ],
         [m["proc_amt"], m["bank_amt"], d_proc, d_part],
         default=0.0,
     )
+
+    # Explicitly convert both operands to numeric types before multiplication.
     stake = pd.Series(stake, index=m.index, dtype="float64")
-fx_rate = m["currency"].map(FX_TO_AZN).astype("float64")
+    fx_rate = m["currency"].map(FX_TO_AZN).astype("float64")
 
-m["break_value_azn"] = (stake * fx_rate).round(2)
+    m["break_value_azn"] = (stake * fx_rate).round(2)
 
-    cols = ["ref", "ts", "partner", "currency", "bank_amt", "proc_amt", "part_amt",
-            "issue", "break_value_azn"]
+    cols = [
+        "ref",
+        "ts",
+        "partner",
+        "currency",
+        "bank_amt",
+        "proc_amt",
+        "part_amt",
+        "issue",
+        "break_value_azn",
+    ]
+
     return m[cols].sort_values("ref", ignore_index=True)
 
 
