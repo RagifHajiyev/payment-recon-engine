@@ -83,7 +83,10 @@ def reconcile(
         [m["proc_amt"], m["bank_amt"], d_proc, d_part],
         default=0.0,
     )
-    m["break_value_azn"] = (stake * m["currency"].map(FX_TO_AZN).astype(float)).round(2)
+    stake = pd.Series(stake, index=m.index, dtype="float64")
+fx_rate = m["currency"].map(FX_TO_AZN).astype("float64")
+
+m["break_value_azn"] = (stake * fx_rate).round(2)
 
     cols = ["ref", "ts", "partner", "currency", "bank_amt", "proc_amt", "part_amt",
             "issue", "break_value_azn"]
