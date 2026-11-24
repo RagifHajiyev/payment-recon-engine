@@ -72,7 +72,7 @@ def reconcile(
     m["currency"] = m["ccy_bank"].fillna(m["ccy_proc"]).fillna(m["ccy_part"])
     m["ts"] = m["ts_bank"].fillna(m["ts_proc"])
 
-    # Amount at stake per break, in the record's own currency, then AZN.
+        # Amount at stake per break, in the record's own currency, then AZN.
     stake = np.select(
         [
             m["issue"].eq("not_in_bank"),
@@ -83,13 +83,18 @@ def reconcile(
         [m["proc_amt"], m["bank_amt"], d_proc, d_part],
         default=0.0,
     )
+
     stake = pd.Series(stake, index=m.index, dtype="float64")
-fx_rate = m["currency"].map(FX_TO_AZN).astype("float64")
+    fx_rate = m["currency"].map(FX_TO_AZN).astype("float64")
 
-m["break_value_azn"] = (stake * fx_rate).round(2)
+    m["break_value_azn"] = (stake * fx_rate).round(2)
 
-    cols = ["ref", "ts", "partner", "currency", "bank_amt", "proc_amt", "part_amt",
-            "issue", "break_value_azn"]
+    cols = [
+        "ref", "ts", "partner", "currency",
+        "bank_amt", "proc_amt", "part_amt",
+        "issue", "break_value_azn"
+    ]
+
     return m[cols].sort_values("ref", ignore_index=True)
 
 
