@@ -1,6 +1,6 @@
 # payment-recon-engine
 
-[![CI](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml)
+[![CI](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml) 
 
 Three-party payment reconciliation, tiered-fee validation and anomaly detection, built and tested on **fully synthetic data**.
 
