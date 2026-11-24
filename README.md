@@ -1,7 +1,5 @@
 # payment-recon-engine
 
-[![CI](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/RagifHajiyev/payment-recon-engine/actions/workflows/ci.yml) 
-
 Three-party payment reconciliation, tiered-fee validation and anomaly detection, built and tested on **fully synthetic data**.
 
 It reproduces a common operations-control problem: the bank ledger, the processor file and the partner statement should agree, but records go missing, get duplicated, or carry different amounts, and partners sometimes bill the wrong fee tier. The project finds those breaks automatically, values them in AZN, and reports them through SQL views.
